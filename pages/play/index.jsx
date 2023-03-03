@@ -38,7 +38,7 @@ export default function Play() {
   }
 
   const handleNextButtonClick = () => {
-    setCountSentence(+1);
+    setCountSentence(countSentence +1);
     setLastAnswer("");
     setClue("");
   }
@@ -63,6 +63,7 @@ export default function Play() {
       }
       </div>
       <InputGame answer={answer} setAnswer={setAnswer} handleInputSubmit={handleInputSubmit} handleInputChange={handleInputChange}/>
+      {countSentence > 2 && "Vous avez dépassé la limite quotidienne ! À demain !"}
     </Layout>
   )
 }
