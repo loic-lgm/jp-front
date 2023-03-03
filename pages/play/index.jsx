@@ -1,6 +1,8 @@
 import Layout from "@/components/layout";
-import { useEffect } from "react";
+import SentenceContainer from "@/components/sentence_container";
 import useSWR from "swr";
+import styles from "@/styles/Play.module.css"
+import InputGame from "@/components/input_game";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json())
 
@@ -13,12 +15,9 @@ export default function Play() {
     <Layout>
       <h1>PLAY</h1>
       {data && 
-        <div>
-          {data.map((sentence) => 
-            <div key={sentence.id}>{sentence.id}</div>
-          )}
-        </div>
+        <SentenceContainer classname={styles.container} data={data}/>
       }
+      <InputGame />
     </Layout>
 
   )
