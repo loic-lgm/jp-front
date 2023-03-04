@@ -9,7 +9,7 @@ export default function Timer ({seconds, setSeconds, setShowAnswer, countSentenc
         if (seconds === 1) {
           clearInterval(myInterval);
           setShowAnswer("La réponse était : ")
-          if (countSentence > 2) {
+          if (countSentence === 2) {
             setDisplayGame(false)
           }
         } 

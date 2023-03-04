@@ -82,7 +82,7 @@ export default function Play() {
         <div>{lastAnswer}</div>
         <div>{clue}</div>
         <div>{showAnswer && showAnswer + data[countSentence].jail_time + " mois"}</div>
-        {(isAnswerTrue || showAnswer) && 
+        {(isAnswerTrue || showAnswer && countSentence < 2) && 
           <div>
             <button onClick={handleNextButtonClick}>Suivant</button>
           </div>
