@@ -10,7 +10,7 @@ export default function Home() {
         <title>La juste peine</title>
       </Head>
       <h1>Home</h1>
-      <Link href="/play" className={styles.button_play}>
+      <Link href="/play" className={styles.buttonPlay}>
         PLAY
       </Link>
     </Layout>
