@@ -10,7 +10,7 @@ const fetcher = (...args) => fetch(...args).then((res) => res.json())
 
 export default function Play() {
   // const { data, error } = useSWR('http://localhost:3001/sentences/getrandoms', fetcher, {refreshInterval: 1000})
-  const { data, error } = useSWR('http://localhost:3001/sentences/getrandoms', fetcher)
+  const { data, error } = useSWR('http://localhost:3001/sentences/getsentences/2/32/36', fetcher)
   
   const [countSentence, setCountSentence] = useState(0);
   const [isAnswerTrue, setIsAnswerTrue] = useState(false);
@@ -20,14 +20,6 @@ export default function Play() {
   const [displayGame, setDisplayGame] = useState(true);
   const [seconds, setSeconds ] =  useState(10);
   const [showAnswer, setShowAnswer] = useState("");
-
-  // if (timeEnd) {
-  //   if (countSentence < 2) {
-  //     setCountSentence(countSentence +1);
-  //   } else {
-  //     setDisplayGame(false);
-  //   }
-  // }
   
   const handleInputSubmit = (e) => {
     e.preventDefault();
@@ -87,7 +79,14 @@ export default function Play() {
             <button onClick={handleNextButtonClick}>Suivant</button>
           </div>
         }
-        {!showAnswer && <InputGame answer={answer} setAnswer={setAnswer} handleInputSubmit={handleInputSubmit} handleInputChange={handleInputChange}/>}
+        {!showAnswer && 
+          <InputGame 
+            answer={answer}  
+            setAnswer={setAnswer} 
+            handleInputSubmit={handleInputSubmit} 
+            handleInputChange={handleInputChange}
+          />
+        }
       </Layout>
     )
   } else {
