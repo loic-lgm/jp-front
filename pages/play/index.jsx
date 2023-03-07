@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Timer from "@/components/timer";
 import Link from "next/link";
 import getRandomIds from "@/utils/getRandoms";
+import Measure from "@/components/measure";
 
 export default function Play ({ allSentences, randomSentences }) {
   const [countSentence, setCountSentence] = useState(0);
@@ -18,6 +19,7 @@ export default function Play ({ allSentences, randomSentences }) {
   const [showAnswer, setShowAnswer] = useState("");
   const [isLoading, setLoading] = useState(false)
   const [data, setData] = useState(null)
+  const [measure, setMeasure] = useState("month")
 
   if (!data) {
     setData(randomSentences)
@@ -52,7 +54,15 @@ export default function Play ({ allSentences, randomSentences }) {
   
   const handleInputSubmit = (e) => {
     e.preventDefault();
-    if (data && data[countSentence].jail_time == answer) {
+    if (
+        data && 
+        (
+          data[countSentence].jail_time == answer ||
+          measure === "year" && 
+          data[countSentence].jail_time == answer * 12
+        )
+      ) 
+    {
       setIsAnswerTrue(true);
       setClue("C'est gagné");
       setShowAnswer("La réponse était : ")
@@ -61,11 +71,21 @@ export default function Play ({ allSentences, randomSentences }) {
         setDisplayGame(false)
       }
     }
-    setLastAnswer(e.target[0].value)
-    if (data && data[countSentence].jail_time < answer) {
-      setClue("C'est moins")
-    } else if (data && data[countSentence].jail_time > answer) {
-      setClue("C'est plus")
+
+    if (measure === "year") {
+      setLastAnswer(e.target[0].value + " ans")
+      if (data && data[countSentence].jail_time < answer * 12) {
+        setClue("C'est moins")
+      } else if (data && data[countSentence].jail_time > answer * 12) {
+        setClue("C'est plus")
+      }
+    } else {
+      setLastAnswer(e.target[0].value + " mois")
+      if (data && data[countSentence].jail_time < answer) {
+        setClue("C'est moins")
+      } else if (data && data[countSentence].jail_time > answer) {
+        setClue("C'est plus")
+      }
     }
     setAnswer("")
   }
@@ -81,6 +101,10 @@ export default function Play ({ allSentences, randomSentences }) {
     setIsAnswerTrue(false);
     setShowAnswer("")
     setSeconds(20)
+  }
+
+  const handleMeasureChange = (e) => {
+    setMeasure(e.target.value)
   }
 
   if (data && countSentence < 3) {
@@ -100,7 +124,10 @@ export default function Play ({ allSentences, randomSentences }) {
         <SentenceContainer classname={styles.container} data={data[countSentence]}/>
         <div>{lastAnswer}</div>
         <div>{clue}</div>
-        <div>{showAnswer && showAnswer + data[countSentence].jail_time + " mois"}</div>
+        {measure === "year" 
+        ? <div>{showAnswer && showAnswer + (data[countSentence].jail_time / 12) + " ans"}</div>
+        : <div>{showAnswer && showAnswer + data[countSentence].jail_time + " mois"}</div>
+        }
         {(isAnswerTrue || !seconds && countSentence < 3) && 
           <div>
             {displayGame 
@@ -113,12 +140,15 @@ export default function Play ({ allSentences, randomSentences }) {
           </div>
         }
         {!showAnswer && 
-          <InputGame 
-            answer={answer}  
-            setAnswer={setAnswer} 
-            handleInputSubmit={handleInputSubmit} 
-            handleInputChange={handleInputChange}
-          />
+          <>
+            <InputGame 
+              answer={answer}  
+              setAnswer={setAnswer} 
+              handleInputSubmit={handleInputSubmit} 
+              handleInputChange={handleInputChange}
+            />
+            <Measure handleMeasureChange={handleMeasureChange}/>
+          </>
         }
       </>
     )
