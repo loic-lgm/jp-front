@@ -7,32 +7,48 @@ import Timer from "@/components/timer";
 import Link from "next/link";
 import getRandomIds from "@/utils/getRandoms";
 
-export default function Play ({ sentences, data }) {
+export default function Play ({ allSentences, randomSentences }) {
   const [countSentence, setCountSentence] = useState(0);
   const [isAnswerTrue, setIsAnswerTrue] = useState(false);
   const [answer, setAnswer] = useState("");
   const [lastAnswer, setLastAnswer] = useState("");
   const [clue, setClue] = useState("");
   const [displayGame, setDisplayGame] = useState(true);
-  const [seconds, setSeconds ] =  useState(10);
+  const [seconds, setSeconds ] =  useState(20);
   const [showAnswer, setShowAnswer] = useState("");
   const [isLoading, setLoading] = useState(false)
-  // const [data, setData] = useState(null)
+  const [data, setData] = useState(null)
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     let todayIds = []
-  //     todayIds = getRandomIds(sentences, 3)
-  //     setLoading(true)
-  //     fetch(`http://localhost:3001/sentences/getsentences/${todayIds[0]}/${todayIds[1]}/${todayIds[2]}`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setData(data)
-  //       setLoading(false)
-  //     })
-  //   }, 6000);
-  //   return () => clearInterval(interval);
-  // }, [])
+  if (!data) {
+    setData(randomSentences)
+  }
+
+  const get3Sentences = (ids) => {
+    setLoading(true)
+      fetch(`http://localhost:3001/sentences/getsentences/${ids[0]}/${ids[1]}/${ids[2]}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data)
+        setLoading(false)
+      })
+  };
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let todayIds = []
+      todayIds = getRandomIds(allSentences, 3)
+      get3Sentences(todayIds)
+      setSeconds(20)
+      setCountSentence(0)
+      setClue("")
+      setLastAnswer("")
+      setAnswer("")
+      setDisplayGame(true)
+      setIsAnswerTrue(false)
+      setShowAnswer(false)
+    }, 86400000);
+    return () => clearInterval(interval);
+  }, [allSentences])
   
   const handleInputSubmit = (e) => {
     e.preventDefault();
@@ -64,10 +80,8 @@ export default function Play ({ sentences, data }) {
     setClue("");
     setIsAnswerTrue(false);
     setShowAnswer("")
-    setSeconds(10)
+    setSeconds(20)
   }
-
-  // if (error || sentencesError) return <div>Failed to load</div>
 
   if (data && countSentence < 3) {
     return (
@@ -126,17 +140,17 @@ export default function Play ({ sentences, data }) {
 
 export async function getServerSideProps() {
   const resSentences = await fetch('http://localhost:3001/sentences')
-  const sentences = await resSentences.json()
+  const allSentences = await resSentences.json()
 
   let todayIds = []
-  todayIds = getRandomIds(sentences, 3)
+  todayIds = getRandomIds(allSentences, 3)
   const resRandoms = await fetch(`http://localhost:3001/sentences/getsentences/${todayIds[0]}/${todayIds[1]}/${todayIds[2]}`)
-  const data = await resRandoms.json()
+  const randomSentences = await resRandoms.json()
 
   return {
     props: {
-      sentences,
-      data
+      allSentences,
+      randomSentences
     },
   }
 }
